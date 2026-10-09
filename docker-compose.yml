@@ -1,0 +1,53 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: tuneflow-db
+    environment:
+      POSTGRES_USER: tuneflow
+      POSTGRES_PASSWORD: tuneflow
+      POSTGRES_DB: tuneflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tuneflow -d tuneflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    container_name: tuneflow-backend
+    environment:
+      DATABASE_URL: postgresql+psycopg2://tuneflow:tuneflow@db:5432/tuneflow
+      CONFIG_FILES: default.yaml
+      ARTIFACT_NAME: latest
+      CORS_ORIGINS: http://localhost:5173,http://localhost:8080,http://localhost:3000
+      TUNEFLOW_ROOT: /app
+    ports:
+      - "8000:8000"
+    volumes:
+      # artifacts trained on your laptop + processed data are shared read-only
+      - ./models:/app/models:ro
+      - ./data:/app/data:ro
+      - ./configs:/app/configs:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    container_name: tuneflow-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

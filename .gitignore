@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Data & artifacts (regenerate locally; keep sample CSVs via git-lfs or re-generate)
+data/raw/*
+data/processed/*
+data/*.db
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+models/*/*/model.joblib
+models/*/*/metadata.json
+reports/figures/*.png
+reports/evaluation/*.json
+reports/evaluation/*.md
+reports/eda_stats.json
+
+# keep sample dataset (tiny, makes the repo runnable out of the box)
+!data/sample/
+
+# Node / frontend
+node_modules/
+frontend/dist/
+*.local
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# ML weights from experiments
+*.pkl
+*.joblib

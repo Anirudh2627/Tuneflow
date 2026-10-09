@@ -1,0 +1,12 @@
+[tool.pytest.ini_options]
+testpaths = ["tests", "backend/tests"]
+pythonpath = [".", "backend"]
+addopts = "-q"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning",
+]
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"

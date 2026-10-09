@@ -1,0 +1,29 @@
+# Overrides for the Million Song Dataset (taste_profile triplets).
+# MSD has no audio features / genres: the content model automatically
+# falls back to artist/title/year TF-IDF features.
+data:
+  source: msd
+  filtering:
+    min_interactions_per_user: 5
+    min_interactions_per_song: 2
+
+collaborative:
+  backend: als
+  factors: 128
+  iterations: 20
+  regularization: 0.05
+  alpha: 40.0
+  n_neighbors: 200
+
+session:
+  # triplets have no timestamps/sessions -> sessions are chunked
+  decay: 0.6
+  n_neighbors: 200
+
+content:
+  text_embedding:
+    provider: none
+
+evaluation:
+  run_name: msd
+  max_users: 2000

@@ -1,0 +1,9 @@
+# Example experiment overlay: larger ALS model.
+# Usage: python scripts/train_collaborative.py --config configs/msd.yaml \
+#          --override-config configs/exp_als256.yaml
+collaborative:
+  backend: als
+  factors: 256
+  iterations: 30
+  regularization: 0.08
+  alpha: 40.0

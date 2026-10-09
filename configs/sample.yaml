@@ -1,0 +1,22 @@
+# Overrides for the built-in sample dataset (fast local runs / tests).
+data:
+  source: sample
+  adapter_kwargs:
+    n_users: 300
+    n_artists: 80
+    n_songs: 1200
+    n_interactions: 15000
+    seed: 42
+
+collaborative:
+  backend: auto
+  factors: 32
+  iterations: 10
+
+content:
+  text_embedding:
+    provider: none
+
+evaluation:
+  run_name: sample
+  max_users: 200

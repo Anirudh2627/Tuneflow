@@ -1,0 +1,121 @@
+# ============================================================
+# TuneFlow default configuration
+# Change anything here (or via a per-experiment override file)
+# instead of touching source code.
+#
+# Env overrides: TUNEFLOW_OVERRIDE__database__url=... style
+# (double underscore = dotted path separator).
+# ============================================================
+
+project:
+  name: tuneflow
+  seed: 42
+  log_level: INFO
+
+data:
+  source: sample                # sample | msd | csv
+  adapter_kwargs: {}            # forwarded to the dataset adapter
+  filtering:
+    min_interactions_per_user: 2
+    min_interactions_per_song: 1
+    max_iter: 10
+  split:
+    train_frac: 0.7
+    val_frac: 0.15
+    seed: 42
+    min_events_for_split: 5     # users with fewer events stay whole in train
+
+# Feedback is NOT weighted equally -- these weights feed interaction
+# matrices, profiles and popularity.
+feedback:
+  event_weights:
+    like: 3.0
+    save: 2.0
+    play: 1.0
+    skip: -0.5
+    dislike: -2.0
+
+content:
+  text_embedding:
+    provider: none              # none | sentence-transformer
+    model_name: all-MiniLM-L6-v2
+    device: null
+    batch_size: 64
+  embedding_weight: 0.3         # blend factor when embeddings enabled
+  like_weight: 2.0
+  play_weight: 1.0
+  dislike_penalty: 1.5
+  profile_history_limit: 60
+
+collaborative:
+  backend: auto                 # auto | als (implicit lib) | item_item (scipy fallback)
+  factors: 64
+  iterations: 15
+  regularization: 0.05
+  alpha: 20.0                   # confidence scaling for ALS
+  n_neighbors: 100              # item-item CF neighbors kept
+
+session:
+  decay: 0.6                    # exponential recency decay over session
+  n_neighbors: 100
+  session_gap_minutes: 30
+  max_session_len: 20
+
+popularity:
+  recent_window_days: 30
+
+ranker:
+  type: weighted                # weighted | learned | lightgbm
+  weights:
+    content_score: 0.30
+    collaborative_score: 0.35
+    session_score: 0.20
+    popularity_score: 0.15
+    genre_affinity: 0.10
+    artist_affinity: 0.08
+    audio_match: 0.06
+    novelty: 0.04
+
+hybrid:
+  candidate_counts:
+    content: 100
+    collaborative: 100
+    session: 60
+    popularity: 60
+  diversity:
+    enabled: true
+    relevance_weight: 0.7
+    diversity_weight: 0.3
+    novelty_weight: 0.05
+  recent_session_limit: 12
+  modes:
+    personalized: {}
+    discover:
+      ranker_weight_overrides:
+        novelty: 0.25
+        popularity_score: 0.20
+        collaborative_score: 0.25
+        content_score: 0.25
+        session_score: 0.05
+    recent:
+      ranker_weight_overrides:
+        session_score: 0.45
+        content_score: 0.30
+        collaborative_score: 0.15
+        popularity_score: 0.10
+        novelty: 0.02
+    trending:
+      ranker_weight_overrides:
+        popularity_score: 0.60
+        novelty: 0.10
+        content_score: 0.15
+        collaborative_score: 0.15
+        session_score: 0.00
+
+evaluation:
+  k_values: [5, 10, 20]
+  max_users: null               # cap evaluated users (null = all)
+  run_name: latest
+
+database:
+  url_env: DATABASE_URL         # backend reads the URL from this env var
